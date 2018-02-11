@@ -1,4 +1,5 @@
 import Vuex from 'vuex';
+import axios from 'axios';
 
 const createStore = () => {
   return new Vuex.Store({
@@ -8,34 +9,55 @@ const createStore = () => {
     mutations: {
       setPosts(state, posts) {
         state.loadedPosts = posts;
+      },
+      addPost(state, post) {
+        state.loadedPosts.push(post);
+      },
+      editPost(state, editedPost) {
+        const postIndex = state.loadedPosts.findIndex(post => post.id === editedPost.id);
+        state.loadedPosts[postIndex] = editedPost;
       }
     },
     actions: {
       nuxtServerInit(vuexContext, context) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            vuexContext.commit('setPosts', [
-              {
-                id: '1',
-                title: 'First Post',
-                previewText: 'This is our first post!',
-                thumbnail:
-                  'https://i.investopedia.com/image/jpeg/1509206221062/tech_global_shutterstock_134102588.jpg'
-              },
-              {
-                id: '2',
-                title: 'Second Post',
-                previewText: 'This is our second post!',
-                thumbnail:
-                  'https://i.investopedia.com/image/jpeg/1509206221062/tech_global_shutterstock_134102588.jpg'
-              }
-            ]);
-            resolve();
-          }, 1500);
-        });
+        return axios
+          .get('https://vuejs-http-dcd62.firebaseio.com/nuxt-blog/posts.json')
+          .then(res => {
+            const postsArray = [];
+            for (const key in res.data) {
+              postsArray.push({ ...res.data[key], id: key });
+            }
+            vuexContext.commit('setPosts', postsArray);
+          })
+          .catch(e => context.error(e));
       },
       setPosts({ commit }, posts) {
         commit('setPosts', posts);
+      },
+      addPost({ commit }, post) {
+        const createdPost = {
+          ...post,
+          updatedDate: new Date()
+        };
+        return axios
+          .post('https://vuejs-http-dcd62.firebaseio.com/nuxt-blog/posts.json', createdPost)
+          .then(result => {
+            commit('addPost', { ...createdPost, id: result.data.name });
+          })
+          .catch(error => console.log(error));
+      },
+      editPost({ commit }, editedPost) {
+        const updatedPost = { ...editedPost, updatedDate: new Date() };
+
+        return axios
+          .put(
+            'https://vuejs-http-dcd62.firebaseio.com/nuxt-blog/posts/' + editedPost.id + '.json',
+            updatedPost
+          )
+          .then(res => {
+            commit('editPost', updatedPost);
+          })
+          .catch(e => console.log(e));
       }
     },
     getters: {

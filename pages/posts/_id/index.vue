@@ -15,22 +15,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  asyncData(context, callback) {
-    setTimeout(() => {
-      callback(null, {
-        loadedPost: {
-          id: '1',
-          title: 'First Post (ID: ' + context.route.params.id + ')',
-          previewText: 'This is our first post!',
-          author: 'Ayush',
-          updatedDate: new Date(),
-          content: 'Some dummy text which is not the preview text man.',
-          thumbnail:
-            'https://i.investopedia.com/image/jpeg/1509206221062/tech_global_shutterstock_134102588.jpg'
-        }
-      });
-    }, 1000);
+  asyncData(context) {
+    return axios
+      .get('https://vuejs-http-dcd62.firebaseio.com/nuxt-blog/posts/' + context.params.id + '.json')
+      .then(res => {
+        return {
+          loadedPost: res.data
+        };
+      })
+      .catch(e => context.error(e));
   }
 };
 </script>
