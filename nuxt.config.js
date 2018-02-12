@@ -22,22 +22,30 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: 'red' },
+  loading: { color: 'yellow', height: '4px', duration: 5000 },
+  loadingIndicator: {
+    name: 'circle',
+    color: '#fa923f'
+  },
 
   /*
   ** Global CSS
   */
-  css: [],
+  css: ['~assets/styles/main.css'],
 
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [],
+  plugins: ['~plugins/core-components.js', '~plugins/date-filter.js'],
 
   /*
   ** Nuxt.js modules
   */
-  modules: [],
+  modules: ['@nuxtjs/axios'],
+  axios: {
+    baseURL: process.env.BASE_URL || 'https://vuejs-http-dcd62.firebaseio.com/nuxt-blog',
+    credentials: false
+  },
 
   /*
   ** Build configuration
@@ -47,5 +55,12 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {}
+  },
+  env: {
+    baseUrl: process.env.BASE_URL || 'https://vuejs-http-dcd62.firebaseio.com/nuxt-blog'
+  },
+  transition: {
+    name: 'fade',
+    mode: 'out-in'
   }
 };
