@@ -57,10 +57,14 @@ module.exports = {
     extend(config, ctx) {}
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://vuejs-http-dcd62.firebaseio.com/nuxt-blog'
+    baseUrl: process.env.BASE_URL || 'https://vuejs-http-dcd62.firebaseio.com/nuxt-blog',
+    fbApiKey: 'AIzaSyA9s0X1um2Lqdn_32bQ-84egZb8hCBLXWo'
   },
   transition: {
     name: 'fade',
     mode: 'out-in'
   }
+  // router: {
+  //   middleware: 'log'
+  // }
 };
